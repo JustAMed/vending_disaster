@@ -7,7 +7,7 @@ import time
 customer_randomness = random.randint(1, 2)
 # stats 
 
-# defauts
+# defaults
 items = {
     'cola': {'price': 10, 'stock': 1},
     'coke': {'price': 8, 'stock': 3},
