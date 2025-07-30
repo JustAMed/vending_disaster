@@ -81,6 +81,6 @@ def open():
 
 start()
 print_items()
-for i in range(1,10):
+for i in range(1,11):
     time.sleep(5)
     open()
