@@ -3,14 +3,20 @@ import random
 import time
 # imports
 
+# variables
+current_money = 5
+earned_money = 0
+spent_money = 0
+# variables
+
 # stats
 customer_randomness = random.randint(1, 2)
 # stats 
 
 # defaults
 items = {
-    'cola': {'price': 10, 'stock': 1},
-    'coke': {'price': 8, 'stock': 3},
+    'cola': {'price': 10, 'stock': 0},
+    'coke': {'price': 8, 'stock': 0},
 }
 def start():
     print("hello")
@@ -50,6 +56,7 @@ def print_items():
         print(f"{item}: Price ₹{details['price']}, Stock {details['stock']}")
 
 def open():
+    global current_money, earned_money
     print("vending machine is open")
     print_items()
     num_customers = random.randint(0, 4)
@@ -69,18 +76,71 @@ def open():
                 if random.random() < 0.8:
                     print(f"Customer {i} bought {item} for ₹{price}.")
                     items[item]['stock'] -= 1
+                    current_money += price
+                    earned_money += price
                     bought = True
                     break
         if not bought:
             print(f"Customer {i} left without buying anything.")
     print("vending machine closed")
 
+def restock(item):
+    global current_money, spent_money
+    if item not in items:
+        print("No such item found")
+        return
+    
+    cost = int(items[item]['price'] * 0.5)
+
+    if current_money < cost:
+        print("no money")
+        return
+    
+    items[item]['stock'] += 1
+    current_money -= cost 
+    spent_money += cost
+    print(f"Restocked 1 {item} for rs {cost}.")
 
 
+def check_restock():
+    for item_name, data in items.items():
+            if data['stock'] == 0:
+                print(f"AND WE'RE OUT OF BETA WE'RE RELEASING {item_name} ON TIME")
+                restock(item_name)
+
+def check_bankruptcy():
+    global items, current_money
+
+    all_zero_stock = all(item['stock'] == 0 for item in items.values())
+    if not all_zero_stock:
+        return False
+
+    restock_costs = [int(item['price'] * 0.5) for item in items.values()]
+    if not restock_costs:
+        return False
+
+    min_restock_cost = min(restock_costs)
+    if current_money < min_restock_cost:
+        print("\n🚨 HOUSTON SHUTDOWN 🚨")
+        print("Houston: 'Out of stock... Out of cash... Out of TIME.'")
+        exit()
+    
+    return False   
+    
 
 
-start()
-print_items()
-for i in range(1,11):
-    time.sleep(5)
-    open()
+def run():
+    
+    start()
+    print_items()
+    for i in range(1,100):
+        open()
+        check_restock()
+        check_bankruptcy()
+
+
+    print(f"Money earned this round: ₹{earned_money}")
+    print(f"Total money in machine: ₹{current_money}")
+    print(f"Total spent: ₹{spent_money}")
+
+run()
